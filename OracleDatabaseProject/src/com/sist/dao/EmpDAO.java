@@ -27,7 +27,7 @@ import java.sql.*;
  * 		SelectList	SelectOne
  */
 
-public class EmpDAO {
+public class EmpDAO { //1
 	//1. 공통 사용된 객체
 	private Connection conn; // 오라클 연결 객체
 	// => SQL문자 ANSI(표준화)
@@ -42,33 +42,40 @@ public class EmpDAO {
 	private final String URL = "jdbc:oracle:thin:@localhost:1521:XE";
 	
 	// 5. 드라이버 등록
-	public EmpDAO() {
-		try {
+	public EmpDAO() { //2
+		try { 
 			Class.forName("oracle.jdbc.driver.OracleDriver");
 			//com.mysql.cj.Driver
-		}
-		catch(Exception ex) {}
+		} 
+		catch(Exception ex) { 
+			
+		} 
 		
-	}
+	} //2
+	
 	// 6. 싱글톤 구현
-	public static EmpDAO newInstance() {
-		if(dao == null) {
+	public static EmpDAO newInstance() { //3
+		if(dao == null) { 
 			dao = new EmpDAO();
-		}
+		} 
 
 		return dao;
-	}
+		
+	} //3
 	
 	// 7. 오라클 연결
-	public void getConnection() {
-		try {
+	public void getConnection() { //4
+		try { 
 			conn = DriverManager.getConnection(URL, "hr","happy");
-		}
-		catch(Exception ex) {}
+		} 
+		catch(Exception ex) { 
+			
+		} 
 
-	}
+	} //4
+	
 	// 8. 오라클 연결 종료
-	public void disConnection() {
+	public void disConnection() { //5
 		try {
 			if(ps != null) {
 				ps.close();
@@ -79,10 +86,11 @@ public class EmpDAO {
 		}
 		catch(Exception ex) {}
 
-	}
+	} //5
+	
 	// 9. 기능
 	// 9-1. 목록 => 프로젝션 List
-	public List<EmpVO> empListData(){
+	public List<EmpVO> empListData(){ //6
 		
 		List<EmpVO> list = new ArrayList<EmpVO>();
 		
@@ -127,13 +135,107 @@ public class EmpDAO {
 		}
 		return list;
 		
-	}
+	} //6
+	
 	// 9-2. 상세보기 => 셀렉션 VO
+	public EmpVO empDetailData(int empno) {
+		
+		EmpVO vo = new EmpVO();
+		
+		try {
+			
+			getConnection();
+			
+			String sql = "SELECT empno, ename, job, mgr, hiredate,"
+					+"sal, comm, deptno "
+					+"FROM emp "
+					+"WHERE empno=" +empno;
+			
+			ps = conn.prepareStatement(sql);
+			
+			ResultSet rs = ps.executeQuery();
+			
+			rs.next();
+			
+			vo.setEmpno(rs.getInt(1));
+			vo.setEname(rs.getString(2));
+			vo.setJob(rs.getString(3));
+			vo.setMgr(rs.getInt(4));
+			vo.setHiredate(rs.getDate(5));
+			vo.setSal(rs.getInt(6));
+			vo.setComm(rs.getInt(7));
+			vo.setDeptno(rs.getInt(8));
+			rs.close();
+			
+		}
+		catch(Exception ex) {
+			ex.printStackTrace();
+		}
+		finally {
+			disConnection();
+		}
+		
+		return vo;
+	}
+	
 	// 9-3. 검색	=> LIKE List
+public List<EmpVO> empFindData(String ename){
+		
+		List<EmpVO> list = new ArrayList<EmpVO>();
+		
+		try {
+			// 1. 연결
+			getConnection();
+			
+			// 2. 오라클에 어떤 문장을 전송할지
+			// 오라클은 데이터가 대소문자 구분 => EMP에 모든 데이터가 대문자
+//			String sql = "SELECT empno, ename, job, TO_CHAR(hiredate,'YYYY-MM-DD'),sal "
+//					+ "FROM emp "
+//					+ "WHERE ename LIKE '%'||?||'%' "
+//					+ "ORDER BY sal DESC";
+			String sql = "SELECT empno, ename, job, TO_CHAR(hiredate,'YYYY-MM-DD'),sal "
+					+ "FROM emp "
+					+ "WHERE ename LIKE '%"+ename.toUpperCase()+"%' "
+					+ "ORDER BY sal DESC";
+			
+			// 3. 오라클로 전송
+			ps = conn.prepareStatement(sql);
+			
+			// 4. 실행 후에 결과 값을 메모리에 저장
+			ResultSet rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				
+				EmpVO vo = new EmpVO();
+				vo.setEmpno(rs.getInt(1));
+				vo.setEname(rs.getString(2));
+				vo.setJob(rs.getString(3));
+				vo.setDbday(rs.getString(4));
+				vo.setSal(rs.getInt(5));
+				
+				list.add(vo);
+				
+			}
+			
+			// 5. 메모리 닫기
+			rs.close();
+		}
+		catch(Exception ex) {
+			
+			ex.printStackTrace();
+			
+		}
+		finally {
+			
+			disConnection();
+			
+		}
+		return list;
+		
+	}
 	
 	
-	
-}
+} //1
 
 
 
