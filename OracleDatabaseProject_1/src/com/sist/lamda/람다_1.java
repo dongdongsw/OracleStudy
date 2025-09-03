@@ -35,14 +35,6 @@ package com.sist.lamda;
  * 
  * 
  * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
  */
 @FunctionalInterface
 interface 계산기{
@@ -67,7 +59,10 @@ interface MyFunction{
  * 			익명의 함수를 간단하게 표현하는 문법
  * 			() -> {구현부} => 함수명(x), return(x)
  * 
- * 			let aaa = () => {}
+ * 			let aaa = () => {} => function / return 
+ * 			함수형 인터페이스를 만드는 경우 : 구현이 안된 메소드 1개가 필요
+ * 			=> 코드 간결하다 / 가독성 (여러개 사용) 떨어진다
+ * 			=> 기존의 라이브러리 함수 구현
  */
 
 public class 람다_1 {
