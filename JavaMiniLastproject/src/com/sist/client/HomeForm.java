@@ -7,6 +7,7 @@ public class HomeForm extends JPanel{
 	
 	public HomeForm() {
 		
+		
 		setBackground(Color.DARK_GRAY);
 	}
 	

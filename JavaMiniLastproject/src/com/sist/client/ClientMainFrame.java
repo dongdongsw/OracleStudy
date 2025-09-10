@@ -11,6 +11,7 @@ public class ClientMainFrame extends JFrame implements ActionListener{
 	Login login = new Login();
 	Join join = new Join();
 	
+	
 	public ClientMainFrame() {
 //		add("North",menu); 	// 자동으로 상단에 배치하겠다는 뜻
 		setLayout(null); 	// 직접 배치하겠다는 뜻

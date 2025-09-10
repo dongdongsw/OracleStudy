@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
+
 /*
 			ID      NOT NULL VARCHAR2(20)  
 			PWD     NOT NULL VARCHAR2(10)  
