@@ -20,7 +20,7 @@ public class ClientMainFrame extends JFrame implements ActionListener{
 		add(menu);
 		add(cp);
 		setSize(1280, 800);
-//		setVisible(true);
+		setVisible(true);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		menu.b1.addActionListener(this);
 		menu.b5.addActionListener(this);
