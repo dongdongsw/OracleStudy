@@ -6,7 +6,7 @@ import java.awt.*;
 public class MenuForm extends JPanel{
 
 	JButton b1 = new JButton("HOME");
-	JButton b2 = new JButton("회원가입");
+	JButton b2 = new JButton("마이페이지");
 	JButton b3 = new JButton("맛집검색");
 	JButton b4 = new JButton("빠른 예약");
 	JButton b5 = new JButton("실식간 채팅");
@@ -15,9 +15,9 @@ public class MenuForm extends JPanel{
 	
 	public MenuForm() {
 		setLayout(new GridLayout(1,7,5,5));
-		add(b1);add(b2);add(b3);
+		add(b1);add(b3);
 		add(b4);add(b5);add(b6);
-		add(b7);
+		add(b7);add(b2);
 		
 		
 	}

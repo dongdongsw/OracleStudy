@@ -7,18 +7,21 @@ import com.sist.vo.FoodVO;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.net.URL;
 import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.*;
 
-public class HomeForm extends JPanel implements ActionListener{
+public class HomeForm extends JPanel implements ActionListener,MouseListener{
 	
 	ControllerPanel cp;
 	JPanel pan = new JPanel();
@@ -114,6 +117,7 @@ public class HomeForm extends JPanel implements ActionListener{
 				Image image = ImageChange.getImage(new ImageIcon(url), 170,180);
 				imgs[i] = new JLabel(new ImageIcon(image));
 				imgs[i].setToolTipText(vo.getFno()+"."+vo.getName());
+				imgs[i].addMouseListener(this);
 				pan.add(imgs[i]);
 			} catch (Exception ex) {
 				ex.printStackTrace();
@@ -161,6 +165,45 @@ public class HomeForm extends JPanel implements ActionListener{
 				print();
 			}
 		}
+		
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+
+		for(int i = 0; i<imgs.length; i++) {
+			if(e.getSource() == imgs[i]) {
+				String s = imgs[i].getToolTipText();
+				s=s.substring(0,s.indexOf("."));
+				FoodDetail.type=0;
+//				JOptionPane.showMessageDialog(this, "선택된 번호 :" + s);
+				cp.card.show(cp, "FD");
+				cp.fd.print(Integer.parseInt(s));
+			}
+		}
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
 		
 	}
 

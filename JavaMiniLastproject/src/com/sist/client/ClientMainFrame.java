@@ -25,6 +25,7 @@ public class ClientMainFrame extends JFrame implements ActionListener{
 		menu.b1.addActionListener(this);
 		menu.b5.addActionListener(this);
 		menu.b6.addActionListener(this);
+		menu.b3.addActionListener(this);
 		
 		login.b1.addActionListener(this);	//로그인
 		login.b2.addActionListener(this);	//회원가입
@@ -49,6 +50,9 @@ public class ClientMainFrame extends JFrame implements ActionListener{
 		if(e.getSource()==menu.b1) {
 			
 			cp.card.show(cp, "HF");
+		}
+		else if(e.getSource() == menu.b3) {
+			cp.card.show(cp, "FF");
 		}
 		else if(e.getSource()==menu.b5){
 			
