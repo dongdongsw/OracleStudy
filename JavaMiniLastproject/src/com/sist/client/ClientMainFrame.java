@@ -10,9 +10,26 @@ public class ClientMainFrame extends JFrame implements ActionListener{
 	ControllerPanel cp = new ControllerPanel();
 	Login login = new Login();
 	Join join = new Join();
+	JMenuItem genie;
+	JMenuItem melon;
+	JMenuItem user;
 	
 	
 	public ClientMainFrame() {
+		
+		JMenuBar bar = new JMenuBar();
+		JMenu menu1 = new JMenu("기타");
+		genie = new JMenuItem("지니뮤직");
+		melon = new JMenuItem("멜론");
+		user = new JMenuItem("개인");
+		menu1.add(genie);
+		menu1.add(melon);
+		menu1.add(user);
+		bar.add(menu1);
+		setJMenuBar(bar);
+		
+		
+		
 //		add("North",menu); 	// 자동으로 상단에 배치하겠다는 뜻
 		setLayout(null); 	// 직접 배치하겠다는 뜻
 		menu.setBounds(110, 15, 1000, 50);
@@ -34,6 +51,10 @@ public class ClientMainFrame extends JFrame implements ActionListener{
 		join.b1.addActionListener(this);	//회원가입
 		join.b2.addActionListener(this); 	// 취소
 
+		genie.addActionListener(this);
+		
+		// textfield / button / menuitem => ActionListner
+		// table / label / image / panel => MouseListner
 	}
 	
 	public static void main(String[] args) {
@@ -83,7 +104,9 @@ public class ClientMainFrame extends JFrame implements ActionListener{
 			login.setVisible(true);
 			join.setVisible(false);
 		}	
-		
+		else if(e.getSource() == genie) {
+			cp.card.show(cp,  "GM");
+		}
 		
 		
 				
