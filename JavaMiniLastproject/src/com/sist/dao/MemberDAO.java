@@ -11,7 +11,7 @@ public class MemberDAO {
 	private Connection conn;
 	private PreparedStatement ps;
 	
-	private final String URL="jdbc:oracle:thin:@localhost:1521:XE";
+	private final String URL="jdbc:oracle:thin:@211.238.142.22:1521:XE";
 	private static MemberDAO dao;
 	
 	//드라이버 등록
@@ -38,7 +38,7 @@ public class MemberDAO {
 		try {
 			
 			//1조 => hr_1, 2조 hr_2, 3조 hr_3
-			conn = DriverManager.getConnection(URL,"hr","happy");
+			conn = DriverManager.getConnection(URL,"hr_2","happy");
 				
 		}
 		catch(Exception ex) {}
@@ -165,7 +165,7 @@ public class MemberDAO {
 		}
 		
 		// 3. 우편번호 검색
-		public List<ZipcodeVO> pistFind(String dong){
+		public List<ZipcodeVO> postFind(String dong){
 			
 			List<ZipcodeVO> list = new ArrayList<ZipcodeVO>();
 			
@@ -212,7 +212,7 @@ public class MemberDAO {
 			
 			try {
 				getConnection();
-				String sql = "SELECT COUNT(*)"
+				String sql = "SELECT COUNT(*) "
 							+ "FROM zipcode "
 							+ "WHERE dong LIKE '%'||?||'%'";
 				// 오라클 SQL != 자바 SQL => LIKE
@@ -221,8 +221,9 @@ public class MemberDAO {
 				ps.setString(1, dong);
 				//결과값 받기
 				ResultSet rs = ps.executeQuery();
-				
+				rs.next();
 				count = rs.getInt(1);
+				
 				rs.close();
 			}
 			catch(Exception ex){
@@ -280,8 +281,8 @@ public class MemberDAO {
 			REGDATE          DATE     
 		 */
 		// 5. 회원가입 => 회원 수정 => 회원 정보 출력 => 회원 탈퇴
-		public void memberJoin(MemberVO vo) {
-			
+		public int memberJoin(MemberVO vo) {
+			int res = 0;
 			try {
 				getConnection();
 				String sql = "INSERT INTO project_member "
@@ -299,7 +300,7 @@ public class MemberDAO {
 				ps.setString(7, vo.getAddr2());
 				ps.setString(8, vo.getPhone());
 				ps.setString(9, vo.getContent());
-				ps.executeUpdate();
+				res = ps.executeUpdate();
 				
 			}
 			catch(Exception ex) {
@@ -308,6 +309,7 @@ public class MemberDAO {
 			finally {
 				disConnection();
 			}
+			return res;
 		}
 		
 	 	// 옵션 6. ID찾기 / 비밀번호 찾기

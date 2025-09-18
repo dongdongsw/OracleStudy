@@ -9,5 +9,8 @@
 	<classpathentry kind="lib" path="C:/javaDev/ojdbc8.jar"/>
 	<classpathentry kind="lib" path="C:/javaDev/lombok-1.18.38.jar"/>
 	<classpathentry kind="lib" path="C:/javaDev/jsoup-1.21.1.jar"/>
+	<classpathentry kind="lib" path="C:/javaDev/jackson-annotations-2.19.0.jar"/>
+	<classpathentry kind="lib" path="C:/javaDev/jackson-core-2.19.2.jar"/>
+	<classpathentry kind="lib" path="C:/javaDev/jackson-databind-2.19.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

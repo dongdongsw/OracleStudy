@@ -21,9 +21,10 @@ public class ControllerPanel extends JPanel{
 		gm = new GenieMusic(this);
 		
 		setLayout(card);
-		add("FD",fd);
+		
 
 		add("HF",hf);
+		add("FD",fd);
 		add("CF",cf);
 		add("BF",bf);
 		add("FF",ff);

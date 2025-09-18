@@ -85,15 +85,29 @@ public class Used_MerchandiseDAO {
 		try {
 			getConnection();
 			
-			String sql = "INSERT INTO used_merchandise(no,title,image,price) "
-					+ "VALUES(um_no_seq.nextval, ?,?,?)";
+			String sql = "INSERT INTO used_merchandise(no, title, price, detail_link, "
+					+ "trade_type, location, seller_Trust, category, "
+					+ "seller, create_date, modify_date, description) "
+					+ "VALUES(um_no_seq.nextval, ?,?,?,?,?,?,?,?,TO_DATE(?, 'YYYY-MM-DD HH24:MI:SS'), TO_DATE(?, 'YYYY-MM-DD HH24:MI:SS'),?)";
 			
 			ps = conn.prepareStatement(sql);
 //			ps.setInt(1, vo.getNo());
 			ps.setString(1, vo.getTitle());
-			ps.setString(2, vo.getImage());
-			ps.setString(3, vo.getPrice());
+			ps.setString(2, vo.getPrice());
+			ps.setString(3, vo.getDetail_link());
+			ps.setString(4, vo.getTrade_type());
+			ps.setString(5, vo.getLocation());
+			ps.setString(6, vo.getSeller_Trust());
+			ps.setString(7, vo.getCategory());
+			ps.setString(8, vo.getSeller());
+			ps.setString(9, vo.getCreate_date());
+			ps.setString(10, vo.getModify_date());
+//			ps.setString(11, vo.getState());
+			ps.setString(11, vo.getDescription());
+
+			
 			ps.executeUpdate();
+			
 			
 		} catch (Exception ex) {
 

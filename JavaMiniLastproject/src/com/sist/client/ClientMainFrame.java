@@ -1,5 +1,11 @@
 package com.sist.client;
 import javax.swing.*;
+
+import com.sist.dao.MemberDAO;
+import com.sist.vo.MemberVO;
+import com.sist.vo.ZipcodeVO;
+
+import java.util.List;
 import java.awt.*;
 import java.awt.event.*;
 
@@ -10,6 +16,8 @@ public class ClientMainFrame extends JFrame implements ActionListener{
 	ControllerPanel cp = new ControllerPanel();
 	Login login = new Login();
 	Join join = new Join();
+	IdCheck ic = new IdCheck();
+	PostFind post = new PostFind();
 	JMenuItem genie;
 	JMenuItem melon;
 	JMenuItem user;
@@ -37,7 +45,7 @@ public class ClientMainFrame extends JFrame implements ActionListener{
 		add(menu);
 		add(cp);
 		setSize(1280, 800);
-		setVisible(true);
+		setVisible(false);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		menu.b1.addActionListener(this);
 		menu.b5.addActionListener(this);
@@ -50,8 +58,37 @@ public class ClientMainFrame extends JFrame implements ActionListener{
 		
 		join.b1.addActionListener(this);	//회원가입
 		join.b2.addActionListener(this); 	// 취소
+		join.b3.addActionListener(this);	// 아이디 체크
+		join.b4.addActionListener(this);	// 우편번호 검색
+
 
 		genie.addActionListener(this);
+		
+		// 아이디 체크
+		ic.ok.addActionListener(this);
+		ic.check.addActionListener(this);
+		
+		post.btn.addActionListener(this);
+		post.tf.addActionListener(this);
+		
+		post.table.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if(e.getSource() == post.table) {
+					if(e.getClickCount()==2) {
+						int row = post.table.getSelectedRow();
+						String zip = post.model.getValueAt(row,0).toString();
+						String addr = post.model.getValueAt(row,1).toString();
+						join.tf3.setText(zip);
+						join.tf4.setText(addr);
+						post.setVisible(false);
+								
+					}
+				}
+			}
+			
+		});
 		
 		// textfield / button / menuitem => ActionListner
 		// table / label / image / panel => MouseListner
@@ -68,6 +105,7 @@ public class ClientMainFrame extends JFrame implements ActionListener{
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		
 		if(e.getSource()==menu.b1) {
 			
 			cp.card.show(cp, "HF");
@@ -85,6 +123,41 @@ public class ClientMainFrame extends JFrame implements ActionListener{
 			cp.card.show(cp, "BF");
 
 		}
+		else if(e.getSource()==login.b1){
+			
+			String id = login.tf.getText();
+			if(id.trim().length() < 1) {
+				login.tf.requestFocus();
+				return;
+			}
+			String pwd = new String(login.pf.getPassword());
+			if(pwd.trim().length() < 1) {
+				login.tf.requestFocus();
+				return;
+			}
+			
+			MemberDAO dao = MemberDAO.newInstance();
+			MemberVO vo = dao.isLogin(id, pwd);
+			
+			if(vo.getMsg().equals("NOID")) {
+				JOptionPane.showMessageDialog(this, "아이디가 존재하지 않습니다");
+				login.tf.setText("");
+				login.pf.setText("");
+				login.tf.requestFocus();
+				
+			}
+			else if(vo.getMsg().equals("NOPWD")) {
+				JOptionPane.showMessageDialog(this, "비밀번호가 틀렸습니다");
+				login.pf.setText("");
+				login.pf.requestFocus();
+			}
+			else {
+				login.setVisible(false);
+				setVisible(true);
+				setTitle(vo.getName());
+			}
+		}
+		
 		else if(e.getSource()==login.b2){
 			
 			login.setVisible(false);
@@ -94,21 +167,131 @@ public class ClientMainFrame extends JFrame implements ActionListener{
 			
 			dispose();
 			System.exit(0);
+//			setVisible(true);
+//			login.setVisible(false);
 
 		}
 		else if(e.getSource()==join.b1){
-
+			String id = join.tf1.getText();
+			if(id.trim().length() < 1) {
+				JOptionPane.showMessageDialog(this, "중복 체크를 해라");
+				return;
+			}
+			String pwd = String.valueOf(join.pf.getPassword());
+			String name = join.tf2.getText();
+			String sex = "";
+			if(join.rb1.isSelected()) {
+				sex = "남자";
+				
+			}
+			else {
+				sex = "여자";
+			}
+			String zip = join.tf3.getText();
+			String addr1 = join.tf4.getText();
+			String addr2 = join.tf5.getText();
+			String phone = join.tf6.getText();
+			String content = join.ta.getText();
+			
+			MemberVO vo = new MemberVO();
+			vo.setId(id);
+			vo.setAddr1(addr1);
+			vo.setAddr2(addr2);
+			vo.setContent(content);
+			vo.setPhone(phone);
+			vo.setPwd(pwd);
+			vo.setPost(zip);
+			vo.setSex(sex);
+			vo.setName(name);
+			
+			MemberDAO dao = MemberDAO.newInstance();
+			int res = dao.memberJoin(vo);
+			if(res == 0) {
+				JOptionPane.showMessageDialog(this, "회원가입에 실패했습니다");
+			}
+			else {
+				JOptionPane.showMessageDialog(this, "회원가입에 성공하셨습니다");
+				join.setVisible(false);
+				login.setVisible(true);
+			}
+			
 		}
 		else if(e.getSource()==join.b2){
 			
 			login.setVisible(true);
 			join.setVisible(false);
-		}	
+		}
+		else if(e.getSource()==join.b3){
+			
+			ic.tf.setText("");
+			ic.rla.setText("");
+			ic.setVisible(true);
+		}
+		else if(e.getSource()==join.b4){
+			
+			for(int i = 0; i<post.model.getRowCount() -1; i++) {
+				post.model.removeRow(i);
+			}
+			post.tf.setText("");
+			post.setVisible(true);
+		}
+		
 		else if(e.getSource() == genie) {
 			cp.card.show(cp,  "GM");
 		}
+		// 아이디 체크
+		else if(e.getSource() == ic.check) {
+			String id = ic.tf.getText();
+			
+			if(id.trim().length() < 1 ) {
+				JOptionPane.showMessageDialog(this,"아이디 입력!!");
+				// alert()
+				ic.tf.requestFocus();
+				return;
+			}
+			MemberDAO dao = MemberDAO.newInstance();
+			
+			int count = dao.memberIdCheck(id.trim());
+			if(count == 0) { // Id가 없는 상태
+				ic.rla.setBackground(Color.blue);
+				ic.rla.setText(id +  "는 사용가능한 아이디입니다");
+				ic.ok.setVisible(true);
+			}
+			else { //Id가 있는 상태
+				ic.rla.setBackground(Color.red);
+				ic.rla.setText(id +  "는 이미 사용중인 아이디입니다");
+			}
+		}
 		
 		
+		// 결과
+		else if(e.getSource() == ic.ok) {
+			
+			String id = ic.tf.getText();
+			join.tf1.setText(id);
+			ic.setVisible(false);
+		}
+		else if(e.getSource() == post.btn || e.getSource() == post.tf) {
+			String fd = post.tf.getText();
+			if(fd.trim().length() < 1) {
+				post.tf.requestFocus();
+				return;
+			}
+			MemberDAO dao = MemberDAO.newInstance();
+			int count = dao.postFindCount(fd);
+			if(count == 0) {
+				JOptionPane.showMessageDialog(this, "검색 결과가 없습니다");
+				post.tf.setText("");
+				post.tf.requestFocus();
+			}
+			else {
+				List<ZipcodeVO> list = dao.postFind(fd);
+				for(ZipcodeVO vo : list) {
+					String[] data = {vo.getZipcode(), vo.getAddress()};
+					post.model.addRow(data);
+				}
+			}
+		}
 				
 	}
 
