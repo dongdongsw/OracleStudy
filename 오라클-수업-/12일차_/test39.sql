@@ -325,20 +325,28 @@ CREATE SEQUENCE mm_no_seq
 DROP TABLE used_merchandise;
 
 CREATE TABLE used_merchandise(
-	no 	NUMBER, -- pk
-	title VARCHAR2(200) CONSTRAINT um_title_nn NOT NULL,
-	seller VARCHAR2(100), --CONSTRAINT um_seller_nn NOT NULL,
-	price VARCHAR2(100) CONSTRAINT um_price_nn NOT NULL,
-	image VARCHAR2(260) CONSTRAINT um_image_nn NOT NULL,
-	category VARCHAR2(30),
-	state VARCHAR2(30),
-	key VARCHAR2(100),
-	hit NUMBER DEFAULT 0,
-	likecount NUMBER DEFAULT 0,
-	jjimcount NUMBER DEFAULT 0,
-	create_date date,
-	CONSTRAINT um_no_pk PRIMARY KEY(no)
+    no NUMBER PRIMARY KEY,
+    title VARCHAR2(200) NOT NULL,
+    price VARCHAR2(100),
+    detail_link VARCHAR2(300) UNIQUE,
+    trade_type VARCHAR2(70),
+    location VARCHAR2(200),
+    seller_trust VARCHAR2(70),
+    category VARCHAR2(100),
+    seller VARCHAR2(100),
+    state VARCHAR2(70),
+    description CLOB,
+    image VARCHAR2(500),
+    crawl_key VARCHAR2(100),
+    view_count NUMBER DEFAULT 0,
+    like_count NUMBER DEFAULT 0,
+    jjim_count NUMBER DEFAULT 0,
+    create_date DATE,
+    modify_date DATE
 );
+
+DROP SEQUENCE um_no_seq;
+
 
 /*
 CREATE SEQUENCE um_no_seq
