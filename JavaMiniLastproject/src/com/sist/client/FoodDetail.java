@@ -10,6 +10,7 @@ import javax.swing.border.LineBorder;
 import com.sist.commons.ImageChange;
 import com.sist.dao.FoodDAO;
 import com.sist.vo.FoodVO;
+import com.sist.vo.JjimVO;
 
 public class FoodDetail extends JPanel implements ActionListener{
 
@@ -22,7 +23,10 @@ public class FoodDetail extends JPanel implements ActionListener{
 	JLabel[] lap = new JLabel[9];
 	JTextPane ta;
 	JButton b1, b2, b3;
+	
 	static int type=0;
+	int fno=0;
+	
 	public FoodDetail(ControllerPanel cp) {
 		
 		setLayout(null);
@@ -35,6 +39,7 @@ public class FoodDetail extends JPanel implements ActionListener{
 		mainLa.setBounds(200,15,300,350);
 		mainLa.setBorder(new LineBorder(Color.red));
 		add(mainLa);
+		
 		for(int i = 0; i<las.length; i++) {
 			las[i] = new JLabel(temp[i]);
 			las[i].setBounds(510,i*35+15,80,30);
@@ -43,8 +48,10 @@ public class FoodDetail extends JPanel implements ActionListener{
 			lap[i].setBounds(600,i*35+15,300,30);
 			add(lap[i]);
 		}
+		
 		ta = new JTextPane();
 		ta.setEnabled(false);
+		
 		JScrollPane js = new JScrollPane(ta);
 		js.setBounds(200,370,700,150);
 		add(js);
@@ -52,37 +59,56 @@ public class FoodDetail extends JPanel implements ActionListener{
 		b1 = new JButton("찜하기");
 		b2 = new JButton("좋아요");
 		b3 = new JButton("목록");
+		
 		JPanel p = new JPanel();
 		p.add(b1);
 		p.add(b2);
 		p.add(b3);
-		
 		p.setBounds(510,330,390,35);
 		add(p);
 		
 		b3.addActionListener(this);
+		b1.addActionListener(this);
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
+
 		if(e.getSource()==b3) {
+			
 			if(type==0) {
+				
 				cp.card.show(cp, "HF");
 				cp.hf.init();
 				cp.hf.print();
 			}
 			else {
+				
 				cp.card.show(cp, "FF");
 				cp.ff.print();
+			}
+		}
+		else if(e.getSource()==b1){
+			FoodDAO dao = FoodDAO.newInstance();
+			JjimVO vo = new JjimVO();
+			vo.setFno(fno);
+			vo.setId(cp.myId);
+			int  res = dao.jjimInsert(vo);
+			if(res > 0) {
+				JOptionPane.showMessageDialog(this, "찜 완료!");
+				print(fno);
 			}
 		}
 	}
 	
 	
 	public void print(int fno) {
+		
+		this.fno = fno;
+		
 		FoodDAO dao = FoodDAO.newInstance();
 		FoodVO vo = dao.foodDetailData(fno);
+		
 		lap[0].setText(vo.getName());
 		lap[1].setText(vo.getAddress());
 		lap[2].setText(vo.getPhone());
@@ -96,12 +122,21 @@ public class FoodDetail extends JPanel implements ActionListener{
 		ta.setText(vo.getContent());
 		
 		try {
+			
 			URL url = new URL(vo.getPoster());
 			Image img = ImageChange.getImage(new ImageIcon(url), 300, 300);
 			mainLa.setIcon(new ImageIcon(url));
+			
 			} catch (Exception ex) {
-				ex.printStackTrace();
 				
+				ex.printStackTrace();
+		}
+		int count = dao.jjimCheck(fno, cp.myId);
+		if(count == 0) {
+			b1.setEnabled(true);
+		}
+		else{
+			b1.setEnabled(false);
 		}
 	}
 	

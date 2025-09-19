@@ -7,37 +7,38 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 
 import com.sist.vo.FoodVO;
+import com.sist.vo.JjimVO;
 
 import java.util.*;
 
-
-
 public class FoodDAO {
+	
 	private Connection conn;
 	private PreparedStatement ps;
-	
 	private final String URL="jdbc:oracle:thin:@localhost:1521:XE";
 	private static FoodDAO dao;
 	private final int ROWSIZE=12;
 	
-	
 	//드라이버 등록
 	public FoodDAO() {
 		try {
-			Class.forName("oracle.jdbc.driver.OracleDriver");
 			
+			Class.forName("oracle.jdbc.driver.OracleDriver");
 			}
 		catch(Exception ex){
 			
+			ex.printStackTrace();
 			}	
 		}
 	
 	public static FoodDAO newInstance() {
+		
 		if(dao == null) {
+			
 			dao= new FoodDAO();
 		}
+		
 		return dao;
-			
 	}
 		
 	//연결
@@ -46,9 +47,10 @@ public class FoodDAO {
 			
 			//1조 => hr_1, 2조 hr_2, 3조 hr_3
 			conn = DriverManager.getConnection(URL,"hr","happy");
-				
 		}
-		catch(Exception ex) {}
+		catch(Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 		
 	public void disConnection() {
@@ -56,21 +58,28 @@ public class FoodDAO {
 		try {
 		
 			if(ps!=null) {
+				
 				ps.close();
 				}
 			
 			if(conn!= null) { 
+				
 				conn.close();
 				}
-			
 		}
-		catch(Exception ex) {}
+		catch(Exception ex) {
+			ex.printStackTrace();
+		}
 	}
+	
 	// = 목록
 	public List<FoodVO> foodListData(int page){
+		
 		//페이징 처리 => 인라인 뷰
 		List<FoodVO> list = new ArrayList<FoodVO>();
+		
 		try {
+			
 			//인덱스 자동화 : PRIMARY KEY, UNIQUE
 			getConnection();
 			String sql = "SELECT fno,name,poster,num "
@@ -78,7 +87,9 @@ public class FoodDAO {
 					+ "FROM (SELECT/*+ INDEX_ASC(menupan_food menuf_fno_pk)*/fno,name,poster "
 					+ "FROM menupan_food)) "
 					+ "WHERE num BETWEEN ? AND ?";
+			
 			ps = conn.prepareStatement(sql);
+			
 			int start = (page*ROWSIZE)-(ROWSIZE-1);
 			int end = page * ROWSIZE;
 			/*
@@ -90,8 +101,10 @@ public class FoodDAO {
 			 */
 			ps.setInt(1, start);
 			ps.setInt(2, end);
+			
 			//오라클 실행
 			ResultSet rs = ps.executeQuery();
+			
 			//결과 값이 rs안에 존재 => List에 채운다
 			while(rs.next()) {	// 출력한 첫 번째위치에 커서 이동
 				// JDBC => 읽기 => ROW단위로 읽어온다
@@ -106,19 +119,17 @@ public class FoodDAO {
 			}
 			rs.close();
 			
-			
 		} catch(Exception ex){
 			
 			ex.printStackTrace();
-			
 		}
 		finally {
 			
 			disConnection();
-			
 		}
 		return list;
 	}
+	
 	// 1-1 총페이지
 	public int foodTotalPage() {
 		
@@ -127,8 +138,11 @@ public class FoodDAO {
 		try {
 			
 			getConnection();
+			
 			String sql = "SELECT CEIL(COUNT(*)/"+ROWSIZE+") FROM menupan_food";
+			
 			ps = conn.prepareStatement(sql);
+			
 			ResultSet rs = ps.executeQuery();
 			rs.next();
 			total = rs.getInt(1);
@@ -337,6 +351,144 @@ public class FoodDAO {
 		finally {
 			disConnection();
 		}
+		return count;
+	}
+	//찜
+	// 1. 찜 저장
+	public int jjimInsert(JjimVO vo) {
+		
+		int res = 0;
+		
+		try {
+			getConnection();
+			
+			String sql = "INSERT INTO jjim VALUES( "
+					+ "jjim_jno_seq.nextval,?,?)";
+			
+			ps = conn.prepareStatement(sql); //먼저 SQL 문장 전송
+
+			// 나중에 값을 채워서 실행
+			ps.setInt(1,  vo.getFno());
+			ps.setString(2, vo.getId());
+			
+			//실행
+			res= ps.executeUpdate();
+			
+		} 
+		catch (Exception ex) {
+			
+			ex.printStackTrace();
+			
+		}
+		finally {
+			
+			disConnection();
+		}
+		return res;
+	}
+	
+	// 2. 찜 읽기
+	public List<JjimVO> jjimListData(String id){
+
+		List<JjimVO> list = new ArrayList<JjimVO>();
+		
+		try {
+			getConnection();
+			
+			String sql = "SELECT jno, fno, id, getName(fno),getPoster(fno) "
+					+ "FROM jjim "
+					+ "WHERE id = ?";
+			
+			ps = conn.prepareStatement(sql); //먼저 SQL 문장 전송
+
+			ps.setString(1,id);
+			
+			ResultSet rs = ps.executeQuery();
+			while(rs.next()) {
+				JjimVO vo = new JjimVO();
+				vo.setJno(rs.getInt(1));
+				vo.setFno(rs.getInt(2));
+				vo.setId(rs.getString(3));
+				vo.setName(rs.getString(4));
+				vo.setPoster(rs.getString(5));
+				
+				list.add(vo);
+				
+			}
+			
+			rs.close();
+			
+		} 
+		catch (Exception ex) {
+			
+			ex.printStackTrace();
+			
+		}
+		finally {
+			
+			disConnection();
+		}
+		return list;
+	}
+	
+	// 3. 찜 취소
+	public void jjimCancel(int jno) {
+		
+		
+		try {
+			getConnection();
+			
+			String sql = "DELETE FROm jjim "
+					+ "WHERE jno = ?";
+			
+			ps = conn.prepareStatement(sql); //먼저 SQL 문장 전송
+
+			ps.setInt(1, jno);
+			ps.executeUpdate();
+			
+			
+		} 
+		catch (Exception ex) {
+			
+			ex.printStackTrace();
+			
+		}
+		finally {
+			
+			disConnection();
+		}
+	}
+	
+	public int jjimCheck(int fno,String id) {
+		
+		int count = 0;
+		
+		try {
+			getConnection();
+			
+			String sql = "SELECT COUNT(*) "
+					+ "FROM jjim "
+					+ "WHERE fno = ? AND id = ?";
+			
+			ps = conn.prepareStatement(sql); //먼저 SQL 문장 전송
+			ps.setInt(1, fno);
+			ps.setString(2, id);
+			ResultSet rs = ps.executeQuery();
+			rs.next();
+			count = rs.getInt(1);
+			rs.close();
+			
+		} 
+		catch (Exception ex) {
+			
+			ex.printStackTrace();
+			
+		}
+		finally {
+			
+			disConnection();
+		}
+		
 		return count;
 	}
 	
